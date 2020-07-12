@@ -1,0 +1,10 @@
+{% extends 'mis_cosas_app/base.html' %}
+  {% block contenido %}
+    <form method = "POST" action="/" id="alimentador">
+      {% csrf_token %}
+      <label for="identificador">Identificador: </label><br>
+      <input type="text" id="id" name="id">
+      <input type="submit" value="Enviar">
+    </form>
+
+  {% endblock %}

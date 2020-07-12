@@ -1,0 +1,63 @@
+#alimentador{
+  background-color: orange;
+  border-style: solid;
+  padding-bottom: 10px;
+}
+
+#navbar a{
+  color: orange;
+}
+
+#navbar a:hover{
+  color: orange;
+  background-color: gray;
+}
+
+#LogIn a{
+  border-radius: 0px;
+}
+
+#usuarioform{
+  text-align: center;
+}
+
+table, td, th {
+  border: 1px solid black;
+}
+
+footer a:link {
+  color: green;
+  text-decoration: none;
+}
+
+footer a:visited {
+  color: white;
+  text-decoration: underline;
+}
+
+footer a:hover {
+  color: red;
+  text-decoration: none;
+}
+
+footer a:active {
+  text-decoration: underline;
+  color: red;
+  border-style: hidden;
+}
+
+footer {
+  background-color: #4E4E4E;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  text-align: center;
+}
+
+body {
+  background-color: #E1E1E1;
+  font-family: 'Cambay';
+
+}

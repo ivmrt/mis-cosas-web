@@ -1,0 +1,17 @@
+{% extends 'mis_cosas_app/base.html' %}
+  {% block contenido %}
+  <br>
+    <h2> Página de usuarios </h2>
+    <div class="row">
+    {% for usuario in lista_usuarios %}
+      <div class="card col-sm-4" style="width:400px">
+        <div class="card-body">
+          <h4 class="card-title">{{ usuario.username }}</h4>
+          <p class="card-text">Items votados: <br> Número de comentarios:  </p>
+          <a href="#" class="btn btn-dark">See Profile</a>
+        </div>
+        <img class="card-img-bottom" src="img_avatar6.png" alt="Card image" style="width:100%">
+      </div>
+    {% endfor %}
+    </div>
+  {% endblock %}
