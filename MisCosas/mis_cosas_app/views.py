@@ -15,7 +15,7 @@ def youtube_parser(id):
     url = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + id
     xmlStream = urllib.request.urlopen(url)
     canal = YTChannel(xmlStream)
-    # Guardamos el alimentador (canal) en la base de datos,
+    # Guardamos el alimentador (si no existe) en la base de datos,
     # nos servirá para saber a qué canal pertenece cada vídeo.
     alimentador, creado = Alimentador.objects.get_or_create(nombre=canal.nombre_canal(), enlace=canal.link_canal(), id_canal=id)
     # Recorremos la lista de videos obtenida de la función YTChannel y guardamos cada uno como un item
@@ -82,3 +82,13 @@ def alimentadores(request):
     lista_alimentadores = Alimentador.objects.all()
     context = {'lista_alimentadores': lista_alimentadores}
     return render(request, 'mis_cosas_app/alimentadores.html', context)
+
+def alimentador(request, id_alimentador):
+    alimentador = Alimentador.objects.get(id_canal = id_alimentador)
+    context = {'alimentador': alimentador}
+    return render(request, 'mis_cosas_app/alimentador.html', context)
+
+def item(request, id_item):
+    item = Item.objects.get(id = id_item)
+    context = {'item': item}
+    return render(request, 'mis_cosas_app/item.html', context)

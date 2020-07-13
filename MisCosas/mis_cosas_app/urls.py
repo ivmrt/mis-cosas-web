@@ -9,6 +9,8 @@ urlpatterns = [
     path('usuarios', views.usuarios),
     path('registro', views.new_user),
     path('info', views.info),
-    path('alimentadores', views.alimentadores)
+    path('alimentadores', views.alimentadores),
     #path('usuarios/<str:user_id>'),
+    path('alimentadores/<str:id_alimentador>', views.alimentador),
+    path('item/<str:id_item>', views.item),
 ]

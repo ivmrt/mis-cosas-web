@@ -1,8 +1,7 @@
 {% extends 'mis_cosas_app/base.html' %}
   {% block contenido %}
   <br>
-
-    <h2> Alimentadores </h2>
+    <h2 style="text-align: center;"> Alimentadores </h2>
     <div class="container">
       <table class="table table-hover table-secondary">
         <thead>
@@ -16,7 +15,7 @@
         <tbody>
           {% for alimentador in lista_alimentadores %}
           <tr>
-            <td>{{ alimentador.nombre }}</td>
+            <td><a href="/alimentadores/{{ alimentador.id_canal }}">{{ alimentador.nombre }}</a></td>
             <td><a href="{{ alimentador.enlace }}"> {{ alimentador.enlace }} </a></td>
             <td>Hola</td>
             <td>Adios</td>

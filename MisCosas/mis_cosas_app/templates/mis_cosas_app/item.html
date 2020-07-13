@@ -1,0 +1,23 @@
+{% extends 'mis_cosas_app/base.html' %}
+  {% block contenido %}
+  <div class="jumbotron">
+    <h2 style="text-align: center;"> {{ item.nombre }} </h2>
+    <p style="text-align: center;">Este video pertenece al canal {{ item.alimentador.nombre }}.
+    <a href="{{ item.alimentador.enlace }}" target="_blank"> Enlace al canal </a></p>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <iframe width="854" height="480" src = "https://www.youtube.es/embed/{{ item.id }}"></iframe>
+      </div>
+      <div class="col">
+        <h3> Descripción </h3><br>
+        <p> {{ item.descripcion }} </p>
+      </div>
+    </div>
+    <br>
+    <h2>  </h2>
+  </div>
+  <br>
+
+  {% endblock %}

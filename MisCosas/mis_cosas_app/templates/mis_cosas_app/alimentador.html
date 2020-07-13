@@ -1,0 +1,28 @@
+{% extends 'mis_cosas_app/base.html' %}
+  {% block contenido %}
+    <div class="jumbotron">
+      <h2 style="text-align: center;"> {{ alimentador.nombre }} </h2>
+      <p style="text-align: center;"> <a href="{{ alimentador.enlace }}" target="_blank"> {{ alimentador.enlace }} </a></p>
+    </div>
+    <div class="container">
+      <table class="table table-hover table-secondary">
+        <thead>
+          <tr>
+            <th>Título del vídeo</th>
+            <th>Enlace del vídeo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in alimentador.item_set.all %}
+          <tr>
+            <td><a href="/item/{{ item.id }}">{{ item.nombre }}</a></td>
+            <td><a href="{{ item.enlace }}"> {{ item.enlace }} </a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <br>
+
+
+  {% endblock %}
