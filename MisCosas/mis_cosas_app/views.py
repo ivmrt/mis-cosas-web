@@ -5,11 +5,9 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .ytchannel import YTChannel
-from .models import Alimentador, Item, FotoDePerfil
+from .models import Alimentador, Item, FotoDePerfil, Voto
 
 import urllib
-
-# Create your views here.
 
 def youtube_parser(id):
     url = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + id
@@ -26,17 +24,27 @@ def youtube_parser(id):
 
 def index(request):
     if request.method == "POST":
-        # Ahora tenemos varias acciones con POST, añadir un alimentador y seleccionar
+        # Ahora tenemos varias acciones con POST, añadir un alimentador, seleccionar, eliminar
         accion = request.POST['accion']
         if accion == "Enviar":
             id = request.POST['id']
             youtube_parser(id)
+            url = '/alimentadores/' + id
+            return redirect(url)
         elif accion == "Eliminar":
             id_alimentador = request.POST['id_alimentador']
             alimentador = Alimentador.objects.get(id_canal = id_alimentador)
             alimentador.seleccionado = False
             alimentador.save()
-        return redirect('/')
+        elif accion == "Seleccionar":
+            id_alimentador = request.POST['id_alimentador']
+            youtube_parser(id_alimentador)
+            alimentador = Alimentador.objects.get(id_canal = id_alimentador)
+            alimentador.seleccionado = True
+            alimentador.save()
+            url = '/alimentadores/' + id_alimentador
+            return redirect(url)
+        return redirect(request.META['HTTP_REFERER'])
     elif request.method == "GET":
         alimentadores = Alimentador.objects.filter(seleccionado=True)
         context = {'alimentadores': alimentadores}
@@ -97,6 +105,15 @@ def alimentador(request, id_alimentador):
     return render(request, 'mis_cosas_app/alimentador.html', context)
 
 def item(request, id_item):
-    item = Item.objects.get(id = id_item)
-    context = {'item': item}
-    return render(request, 'mis_cosas_app/item.html', context)
+    if request.method == 'GET':
+        item = Item.objects.get(id = id_item)
+        if request.user.is_authenticated:
+            try:
+                voto = Voto.objects.get(item = item, usuario = request.user)
+            except Voto.DoesNotExist:
+                voto = None
+        else:
+            voto = None
+        context = {'item': item, 'voto': voto}
+        return render(request, 'mis_cosas_app/item.html', context)
+    

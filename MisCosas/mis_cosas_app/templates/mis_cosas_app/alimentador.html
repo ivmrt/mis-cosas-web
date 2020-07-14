@@ -3,6 +3,19 @@
     <div class="jumbotron">
       <h2 style="text-align: center;"> {{ alimentador.nombre }} </h2>
       <p style="text-align: center;"> <a href="{{ alimentador.enlace }}" target="_blank"> {{ alimentador.enlace }} </a></p>
+      {% if alimentador.seleccionado %}
+        <form method = "POST" action="/">
+          {% csrf_token %}
+          <input type = "hidden" name = "id_alimentador" value = "{{ alimentador.id_canal }}">
+          <p style="text-align: center;"><input type="submit" name = "accion" value="Eliminar" class="btn btn-outline-dark"></p>
+        </form>
+      {% else %}
+        <form method = "POST" action="/">
+          {% csrf_token %}
+          <input type = "hidden" name = "id_alimentador" value = "{{ alimentador.id_canal }}">
+          <p style="text-align: center;"><input type="submit" name = "accion" value="Seleccionar" class="btn btn-outline-dark"></p>
+        </form>
+      {% endif %}
     </div>
     <div class="container">
       <table class="table table-hover table-secondary">

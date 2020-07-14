@@ -17,6 +17,7 @@ class Item(models.Model):
     id = models.CharField(max_length=64, primary_key=True)
     enlace = models.URLField()
     descripcion = models.CharField(max_length=1024, null=True)
+
     def __str__(self):
         return self.nombre
 
@@ -24,3 +25,21 @@ class Item(models.Model):
 class FotoDePerfil(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     foto = models.ImageField(upload_to = "media", default="PERFIL-HUEVO.jpg")
+
+    def __str__(self):
+        return self.usuario.username
+
+class Voto(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    voto_positivo = models.BooleanField(default=False)
+    voto_negativo = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.item.nombre
+
+class Comentario(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    comentario = models.CharField(max_length=256)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    fecha = models.DateTimeField()
