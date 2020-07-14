@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .ytchannel import YTChannel
-from .models import Alimentador, Item
+from .models import Alimentador, Item, FotoDePerfil
 
 import urllib
 
@@ -26,13 +26,21 @@ def youtube_parser(id):
 
 def index(request):
     if request.method == "POST":
-        # Recojo el id del alimentador
-        id = request.POST['id']
-        # De momento solo tenemos youtube, utilizamos el parseador de YouTube
-        youtube_parser(id)
+        # Ahora tenemos varias acciones con POST, añadir un alimentador y seleccionar
+        accion = request.POST['accion']
+        if accion == "Enviar":
+            id = request.POST['id']
+            youtube_parser(id)
+        elif accion == "Eliminar":
+            id_alimentador = request.POST['id_alimentador']
+            alimentador = Alimentador.objects.get(id_canal = id_alimentador)
+            alimentador.seleccionado = False
+            alimentador.save()
         return redirect('/')
     elif request.method == "GET":
-        return render(request, 'mis_cosas_app/index.html')
+        alimentadores = Alimentador.objects.filter(seleccionado=True)
+        context = {'alimentadores': alimentadores}
+        return render(request, 'mis_cosas_app/index.html', context)
 
 def log_out(request):
     logout(request)
