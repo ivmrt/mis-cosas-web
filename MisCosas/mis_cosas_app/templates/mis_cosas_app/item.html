@@ -12,16 +12,20 @@
         {% if user.is_authenticated %}
           <div>
             <h4>Puntuación</h4>
-            {% if not voto.voto_positivo and not voto.voto_negativo %}
-              <input type="submit" name = "accion" value="Like" class="btn btn-outline-success">
-              <input type="submit" name = "accion" value="Dislike" class="btn btn-outline-danger">
-            {% elif voto.voto_positivo and not voto.voto_negativo %}
-              <input type="submit" name = "accion" value="Like" class="btn btn-success">
-              <input type="submit" name = "accion" value="Dislike" class="btn btn-outline-danger">
-            {% elif not voto.voto_positivo and voto.voto_negativo%}
-            <input type="submit" name = "accion" value="Like" class="btn btn-outline-success">
-            <input type="submit" name = "accion" value="Dislike" class="btn btn-danger">
-            {% endif %}
+            <form method = "POST" action="/item/{{ item.id }}">
+              {% csrf_token %}
+              <input type = "hidden" name = "item" value = "{{ item.id }}">
+              {% if not voto.voto_positivo and not voto.voto_negativo %}
+                <input type="submit" name = "accion" value="Like" class="btn btn-outline-success">
+                <input type="submit" name = "accion" value="Dislike" class="btn btn-outline-danger">
+              {% elif voto.voto_positivo and not voto.voto_negativo %}
+                <input type="submit" name = "accion" value="Like" class="btn btn-success">
+                <input type="submit" name = "accion" value="Dislike" class="btn btn-outline-danger">
+              {% elif not voto.voto_positivo and voto.voto_negativo%}
+                <input type="submit" name = "accion" value="Like" class="btn btn-outline-success">
+                <input type="submit" name = "accion" value="Dislike" class="btn btn-danger">
+              {% endif %}
+            </form>
           </div>
         {% endif %}
       </div>

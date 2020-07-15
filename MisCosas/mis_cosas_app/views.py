@@ -116,4 +116,19 @@ def item(request, id_item):
             voto = None
         context = {'item': item, 'voto': voto}
         return render(request, 'mis_cosas_app/item.html', context)
-    
+    elif request.method == 'POST':
+        accion = request.POST['accion']
+        item = Item.objects.get(id = id_item)
+        try:
+            voto = Voto.objects.get(item = item, usuario = request.user)
+        except Voto.DoesNotExist:
+            voto = Voto(item = item, usuario = request.user)
+        if accion == "Like":
+            voto.voto_negativo = False
+            voto.voto_positivo = True
+            voto.save()
+        elif accion == "Dislike":
+            voto.voto_negativo = True
+            voto.voto_positivo = False
+            voto.save()
+        return redirect(request.META['HTTP_REFERER'])
