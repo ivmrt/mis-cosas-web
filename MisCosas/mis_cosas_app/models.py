@@ -7,6 +7,8 @@ class Alimentador(models.Model):
     nombre = models.CharField(max_length=64)
     enlace = models.URLField()
     seleccionado = models.BooleanField(default=True)
+    votos = models.IntegerField(default = 0)
+    tipo = models.CharField(max_length=64, null = True)
     def __str__(self):
         return self.nombre
 
@@ -16,7 +18,9 @@ class Item(models.Model):
     nombre = models.CharField(max_length=64)
     id = models.CharField(max_length=64, primary_key=True)
     enlace = models.URLField()
-    descripcion = models.CharField(max_length=1024, null=True)
+    descripcion = models.CharField(max_length=1024, null=True) # Para YouTube
+    foto = models.URLField(null = True) # Para Flickr
+    votos = models.IntegerField(default = 0)
 
     def __str__(self):
         return self.nombre

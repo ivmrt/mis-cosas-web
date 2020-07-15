@@ -2,13 +2,24 @@
   {% block contenido %}
   <div class="jumbotron">
     <h2 style="text-align: center;"> {{ item.nombre }} </h2>
-    <p style="text-align: center;">Este video pertenece al canal {{ item.alimentador.nombre }}.
-    <a href="{{ item.alimentador.enlace }}" target="_blank"> Enlace al canal </a></p>
+    {% if item.alimentador.tipo == "Youtube" %}
+      <p style="text-align: center;">Este video pertenece al canal {{ item.alimentador.nombre }}.
+      <a href="{{ item.enlace }}" target="_blank"> Enlace al video </a></p>
+    {% elif item.alimentador.tipo == "Flickr" %}
+      <p style="text-align: center;">Esta imagen pertenece a la etiqueta {{ item.alimentador.nombre }}.
+      <a href="{{ item.enlace }}" target="_blank"> Enlace a la imagen </a></p>
+      <p style="text-align: center;"><a href="{{ item.enlace }}" target="_blank"> Enlace a la página de la etiqueta </a></p>
+    {% endif %}
+
   </div>
   <div class="container-fluid">
     <div class="row">
       <div class="col">
-        <iframe width="400" height="225" src = "https://www.youtube.es/embed/{{ item.id }}" allowfullscreen></iframe>
+        {% if item.alimentador.tipo == "Youtube" %}
+          <iframe width="400" height="225" src = "https://www.youtube.es/embed/{{ item.id }}" allowfullscreen></iframe>
+        {% elif item.alimentador.tipo == "Flickr" %}
+          <img src="{{ item.foto }}">
+        {% endif %}
         {% if user.is_authenticated %}
           <div>
             <h4>Puntuación</h4>
@@ -29,10 +40,12 @@
           </div>
         {% endif %}
       </div>
-      <div class="col">
-        <h3> Descripción </h3><br>
-        <p> {{ item.descripcion }} </p>
-      </div>
+      {% if item.alimentador.tipo == "Youtube" %}
+        <div class="col">
+          <h3> Descripción </h3><br>
+          <p> {{ item.descripcion }} </p>
+        </div>
+      {% endif %}
     </div>
     <br>
   </div>

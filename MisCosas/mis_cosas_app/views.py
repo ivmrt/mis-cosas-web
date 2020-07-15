@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .ytchannel import YTChannel
+from .flickrparser import FlickrParser
 from .models import Alimentador, Item, FotoDePerfil, Voto
 
 import urllib
@@ -15,20 +16,38 @@ def youtube_parser(id):
     canal = YTChannel(xmlStream)
     # Guardamos el alimentador (si no existe) en la base de datos,
     # nos servirá para saber a qué canal pertenece cada vídeo.
-    alimentador, creado = Alimentador.objects.get_or_create(nombre=canal.nombre_canal(), enlace=canal.link_canal(), id_canal=id)
+    alimentador, creado = Alimentador.objects.get_or_create(nombre=canal.nombre_canal(), enlace=canal.link_canal(), id_canal=id, tipo="Youtube")
     # Recorremos la lista de videos obtenida de la función YTChannel y guardamos cada uno como un item
     for video in canal.videos():
         video = Item(nombre=video['title'], enlace=video['link'], id=video['id'],
         descripcion=video['description'], alimentador=alimentador)
         video.save()
 
+def flickr_parser(id):
+    url = 'http://www.flickr.com/services/feeds/photos_public.gne?tags=' + id
+    xmlStream = urllib.request.urlopen(url)
+    etiqueta = FlickrParser(xmlStream)
+    # Guardamos el alimentador (si no existe) en la base de datos,
+    # nos servirá para saber a qué canal pertenece cada vídeo.
+    alimentador, creado = Alimentador.objects.get_or_create(nombre=etiqueta.nombre_etiqueta(), enlace=etiqueta.link_etiqueta(), id_canal=id, tipo="Flickr")
+    # Recorremos la lista de videos obtenida de la función YTChannel y guardamos cada uno como un item
+    for foto in etiqueta.fotos():
+        foto = Item(nombre=foto['title'], enlace=foto['link'], id=foto['id'],
+        foto=foto['photo'], alimentador=alimentador)
+        foto.save()
+
 def index(request):
     if request.method == "POST":
         # Ahora tenemos varias acciones con POST, añadir un alimentador, seleccionar, eliminar
         accion = request.POST['accion']
-        if accion == "Enviar":
+        if accion == "Obtener videos":
             id = request.POST['id']
             youtube_parser(id)
+            url = '/alimentadores/' + id
+            return redirect(url)
+        elif accion == "Obtener fotos":
+            id = request.POST['id']
+            flickr_parser(id)
             url = '/alimentadores/' + id
             return redirect(url)
         elif accion == "Eliminar":
@@ -38,8 +57,11 @@ def index(request):
             alimentador.save()
         elif accion == "Seleccionar":
             id_alimentador = request.POST['id_alimentador']
-            youtube_parser(id_alimentador)
             alimentador = Alimentador.objects.get(id_canal = id_alimentador)
+            if alimentador.tipo == "Youtube":
+                youtube_parser(id_alimentador)
+            elif alimentador.tipo == "Flickr":
+                flickr_parser(id_alimentador)
             alimentador.seleccionado = True
             alimentador.save()
             url = '/alimentadores/' + id_alimentador
@@ -93,7 +115,6 @@ def new_user(request):
 def info(request):
     return render(request, 'mis_cosas_app/info.html')
 
-
 def alimentadores(request):
     lista_alimentadores = Alimentador.objects.all()
     context = {'lista_alimentadores': lista_alimentadores}
@@ -131,4 +152,8 @@ def item(request, id_item):
             voto.voto_negativo = True
             voto.voto_positivo = False
             voto.save()
+
+        # Actualizamos la puntuación total del ítem.
+
+
         return redirect(request.META['HTTP_REFERER'])
