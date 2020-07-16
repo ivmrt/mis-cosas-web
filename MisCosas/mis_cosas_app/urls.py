@@ -10,7 +10,7 @@ urlpatterns = [
     path('registro', views.new_user),
     path('info', views.info),
     path('alimentadores', views.alimentadores),
-    #path('usuarios/<str:user_id>'),
+    path('usuarios/<str:id_usuario>', views.usuario),
     path('alimentadores/<str:id_alimentador>', views.alimentador),
     path('item/<str:id_item>', views.item),
 ]

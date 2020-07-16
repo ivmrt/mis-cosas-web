@@ -38,6 +38,7 @@ class Voto(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     voto_positivo = models.BooleanField(default=False)
     voto_negativo = models.BooleanField(default=False)
+    fecha = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.item.nombre

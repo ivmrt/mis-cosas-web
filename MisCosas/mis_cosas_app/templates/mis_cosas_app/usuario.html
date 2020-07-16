@@ -1,0 +1,52 @@
+{% extends 'mis_cosas_app/base.html' %}
+  {% block contenido %}
+    <div class="jumbotron">
+      <h2 style="text-align: center;"> {{ usuario.username }}</h2>
+    </div>
+
+    <div class="container">
+      <h3> Ítems votados por {{ usuario.username }}</h3>
+      <table class="table table-hover table-secondary">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Enlace</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items_votados %}
+          <tr>
+            <td><a href="/item/{{ item.item.id }}">{{ item.item.nombre }}</a></td>
+            <td><a href="{{ item.enlace }}"> {{ item.item.enlace }} </a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <br>
+    <div class="container">
+      <h3> Ítems comentados por {{ usuario.username }}</h3>
+      <table class="table table-hover table-secondary">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Enlace</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items_comentados %}
+          <tr>
+            <td><a href="/item/{{ item.item.id }}">{{ item.item.nombre }}</a></td>
+            <td><a href="{{ item.enlace }}"> {{ item.item.enlace }} </a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if user.is_authenticated %}
+
+      
+
+    {% endif %}
+  {% endblock %}

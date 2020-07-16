@@ -71,7 +71,18 @@ def index(request):
         return redirect(request.META['HTTP_REFERER'])
     elif request.method == "GET":
         alimentadores = Alimentador.objects.filter(seleccionado=True)
-        context = {'alimentadores': alimentadores}
+        # Ítems votados por el usuario
+        if request.user.is_authenticated:
+            items_votados = Voto.objects.filter(usuario=request.user)
+            items_votados_ordenados = items_votados.order_by('-fecha')
+            context = {'alimentadores': alimentadores, 'items_votados': items_votados_ordenados[0:5]}
+        else:
+            items_votados= None
+            context = {'alimentadores': alimentadores, 'items_votados': items_votados}
+
+        #10 ítems con más puntuación
+
+
         return render(request, 'mis_cosas_app/index.html', context)
 
 def log_out(request):
@@ -152,10 +163,12 @@ def item(request, id_item):
         if accion == "Like":
             voto.voto_negativo = False
             voto.voto_positivo = True
+            voto.fecha = timezone.now()
             voto.save()
         elif accion == "Dislike":
             voto.voto_negativo = True
             voto.voto_positivo = False
+            voto.fecha = timezone.now()
             voto.save()
         elif accion == "Comentar":
             form = ComentarioForm(request.POST)
@@ -167,3 +180,10 @@ def item(request, id_item):
 
 
         return redirect(request.META['HTTP_REFERER'])
+
+def usuario(request, id_usuario):
+    usuario = User.objects.get(username = id_usuario)
+    items_votados = Voto.objects.filter(usuario = usuario)
+    items_comentados = Comentario.objects.filter(usuario = usuario)
+    context = {'usuario': usuario, 'items_votados': items_votados, 'items_comentados': items_comentados}
+    return render(request, 'mis_cosas_app/usuario.html', context)

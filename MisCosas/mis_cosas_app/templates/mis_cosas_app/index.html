@@ -34,7 +34,7 @@
             <td><a href="/alimentadores/{{ alimentador.id_canal }}">{{ alimentador.nombre }}</a></td>
             <td><a href="{{ alimentador.enlace }}"> {{ alimentador.enlace }} </a></td>
             <td> {{ alimentador.item_set.count }} </td>
-            <td>Adios</td>
+            <td></td>
             <td>
               <form method = "POST" action="/">
                 {% csrf_token %}
@@ -55,4 +55,25 @@
       </table>
     </div>
 
+    {% if user.is_authenticated %}
+    <div class="container">
+      <h2> 5 últimos ítems votados por el usuario </h2>
+      <table class="table table-hover table-secondary">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Enlace</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items_votados %}
+          <tr>
+            <td><a href="/item/{{ item.item.id }}"> {{ item.item.nombre }} </a></td>
+            <td><a href="{{ item.item.enlace }}"> {{ item.item.enlace }} </a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
   {% endblock %}

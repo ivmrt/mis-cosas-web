@@ -8,7 +8,7 @@
     {% elif item.alimentador.tipo == "Flickr" %}
       <p style="text-align: center;">Esta imagen pertenece a la etiqueta {{ item.alimentador.nombre }}.
       <a href="{{ item.enlace }}" target="_blank"> Enlace a la imagen </a></p>
-      <p style="text-align: center;"><a href="{{ item.enlace }}" target="_blank"> Enlace a la página de la etiqueta </a></p>
+      <p style="text-align: center;"><a href="{{ item.alimentador.enlace }}" target="_blank"> Enlace a la página de la etiqueta </a></p>
     {% endif %}
 
   </div>
@@ -68,10 +68,13 @@
     {% else %}
       {% for comentario in item.comentario_set.all %}
         <h4>{{ comentario.usuario.username }}</h4>
+        {{ comentario.fecha }} <br>
         {{ comentario.comentario }}
+
         <br>
       {% endfor %}
     {% endif %}
+    <br>
     {% if user.is_authenticated %}
     <form method="POST">
       {% csrf_token %}

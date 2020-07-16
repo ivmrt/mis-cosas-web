@@ -34,7 +34,7 @@ class FlickrHandler(ContentHandler):
         elif self.inEntry:
             if name == 'title': # Título de la foto
                 self.inContent = True
-            elif name == 'link' and attrs.get('type') == "text/html": # Link de la publicación
+            elif name == 'link' and attrs.get('rel') == "alternate": # Link de la publicación
                 self.link = attrs.get('href')
             elif name == 'id':  # ID de la publicación
                 self.inContent = True
