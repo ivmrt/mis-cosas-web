@@ -4,14 +4,14 @@
       {% csrf_token %}
       <label for="identificador">Youtube </label><br>
       <input type="text" name="id" placeholder="Identificador">
-      <input type="submit" name="accion" value="Obtener videos">
+      <input type="submit" name="accion" value="Obtener videos" class="btn btn-outline-dark">
     </form>
 
     <form method = "POST" action="/" id="alimentador">
       {% csrf_token %}
       <label for="identificador">Flickr </label><br>
       <input type="text" name="id" placeholder="Identificador">
-      <input type="submit" name="accion" value="Obtener fotos">
+      <input type="submit" name="accion" value="Obtener fotos" class="btn btn-outline-dark">
     </form>
 
     <div class="container">

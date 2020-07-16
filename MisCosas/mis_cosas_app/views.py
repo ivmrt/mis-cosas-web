@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .ytchannel import YTChannel
 from .flickrparser import FlickrParser
-from .models import Alimentador, Item, FotoDePerfil, Voto
+from .models import Alimentador, Item, FotoDePerfil, Voto, Comentario
+from .forms import ComentarioForm
+from django.utils import timezone
 
 import urllib
 
@@ -91,6 +93,8 @@ def log_in(request):
             if usuario is not None:
                 login(request, usuario)
                 return redirect('/')
+        else:
+            return redirect('/login')
     else:
         formulario = AuthenticationForm()
         context = {'formulario': formulario}
@@ -135,7 +139,8 @@ def item(request, id_item):
                 voto = None
         else:
             voto = None
-        context = {'item': item, 'voto': voto}
+        comentario = ComentarioForm()
+        context = {'item': item, 'voto': voto, 'comentario': comentario}
         return render(request, 'mis_cosas_app/item.html', context)
     elif request.method == 'POST':
         accion = request.POST['accion']
@@ -152,7 +157,12 @@ def item(request, id_item):
             voto.voto_negativo = True
             voto.voto_positivo = False
             voto.save()
-
+        elif accion == "Comentar":
+            form = ComentarioForm(request.POST)
+            if form.is_valid():
+                comentario = Comentario(usuario = request.user, comentario = form.cleaned_data['comentario'],
+                item = item, fecha = timezone.now())
+                comentario.save()
         # Actualizamos la puntuación total del ítem.
 
 

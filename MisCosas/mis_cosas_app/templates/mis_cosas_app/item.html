@@ -16,7 +16,7 @@
     <div class="row">
       <div class="col">
         {% if item.alimentador.tipo == "Youtube" %}
-          <iframe width="400" height="225" src = "https://www.youtube.es/embed/{{ item.id }}" allowfullscreen></iframe>
+          <iframe width="854" height="480" src = "https://www.youtube.es/embed/{{ item.id }}" allowfullscreen></iframe>
         {% elif item.alimentador.tipo == "Flickr" %}
           <img src="{{ item.foto }}">
         {% endif %}
@@ -63,7 +63,22 @@
   <div class="container-fluid">
     <br>
     <h2> Comentarios </h2>
-
+    {% if not item.comentario_set.all %}
+      <p> Aún no hay comentarios. Para escribir un comentario <a href="/login"> inicie sesión.</a></p>
+    {% else %}
+      {% for comentario in item.comentario_set.all %}
+        <h4>{{ comentario.usuario.username }}</h4>
+        {{ comentario.comentario }}
+        <br>
+      {% endfor %}
+    {% endif %}
+    {% if user.is_authenticated %}
+    <form method="POST">
+      {% csrf_token %}
+      {{ comentario.as_p }}
+      <input type="submit" name = "accion" value="Comentar" class="btn btn-dark">
+    </form>
+    {% endif %}
   </div>
   <br>
 

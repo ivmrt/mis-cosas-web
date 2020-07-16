@@ -47,3 +47,6 @@ class Comentario(models.Model):
     comentario = models.CharField(max_length=256)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     fecha = models.DateTimeField()
+
+    def __str__(self):
+        return "Comentario de " + self.usuario.username + " en el ítem " + self.item.nombre
