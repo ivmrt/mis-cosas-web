@@ -1,6 +1,6 @@
 {% extends 'mis_cosas_app/base.html' %}
   {% block contenido %}
-    <div class="jumbotron">
+    <div class="jumbotron" id="jumbotron">
       <h2 style="text-align: center;"> {{ usuario.username }}</h2>
     </div>
 
@@ -44,9 +44,22 @@
       </table>
     </div>
 
-    {% if user.is_authenticated %}
-
-      
-
+    {% if user.is_authenticated and usuario.username == user.username%}
+      {% if modo.tema_oscuro %}
+        <div class="container">
+          <form method = "POST" action="/usuarios/{{ usuario.username }}">
+            {% csrf_token %}
+            <input type="submit" name="tema" value="Modo claro" class="btn btn-outline-dark">
+          </form>
+        </div>
+      {% else %}
+      <div class="container">
+        <form method = "POST" action="/usuarios/{{ usuario.username }}">
+          {% csrf_token %}
+          <input type="submit" name="tema" value="Modo oscuro" class="btn btn-outline-dark">
+        </form>
+      </div>
+      {% endif %}
+      <br>
     {% endif %}
   {% endblock %}

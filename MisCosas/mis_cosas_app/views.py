@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .ytchannel import YTChannel
 from .flickrparser import FlickrParser
-from .models import Alimentador, Item, FotoDePerfil, Voto, Comentario
+from .models import Alimentador, Item, FotoDePerfil, Voto, Comentario, Usuario
 from .forms import ComentarioForm
 from django.utils import timezone
 
@@ -73,9 +73,10 @@ def index(request):
         alimentadores = Alimentador.objects.filter(seleccionado=True)
         # Ítems votados por el usuario
         if request.user.is_authenticated:
+            usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
             items_votados = Voto.objects.filter(usuario=request.user)
             items_votados_ordenados = items_votados.order_by('-fecha')
-            context = {'alimentadores': alimentadores, 'items_votados': items_votados_ordenados[0:5]}
+            context = {'alimentadores': alimentadores, 'items_votados': items_votados_ordenados[0:5], 'modo': usuario_para_oscuro}
         else:
             items_votados= None
             context = {'alimentadores': alimentadores, 'items_votados': items_votados}
@@ -91,7 +92,11 @@ def log_out(request):
 
 def usuarios(request):
     lista_usuarios = User.objects.all()
-    context = {'lista_usuarios': lista_usuarios}
+    if request.user.is_authenticated:
+        usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
+        context = {'lista_usuarios': lista_usuarios, 'modo': usuario_para_oscuro}
+    else:
+        context = {'lista_usuarios': lista_usuarios}
     return render(request, 'mis_cosas_app/usuarios.html', context)
 
 def log_in(request):
@@ -108,7 +113,11 @@ def log_in(request):
             return redirect('/login')
     else:
         formulario = AuthenticationForm()
-        context = {'formulario': formulario}
+        if request.user.is_authenticated:
+            usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
+            context = {'formulario': formulario, 'modo': usuario_para_oscuro}
+        else:
+            context = {'formulario': formulario}
         return render(request, 'mis_cosas_app/login.html', context)
 
 
@@ -124,20 +133,51 @@ def new_user(request):
     # Si el formulario no es válido, no devuelve nada (None) y salta excepción
     else:
         formulario = UserCreationForm();
-        context = {'formulario': formulario}
+        if request.user.is_authenticated:
+            usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
+            context = {'formulario': formulario, 'modo': usuario_para_oscuro}
+        else:
+            context = {'formulario': formulario}
         return render(request, 'mis_cosas_app/nuevo_usuario.html', context)
 
 def info(request):
-    return render(request, 'mis_cosas_app/info.html')
+    if request.user.is_authenticated:
+        usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
+        context = {'modo': usuario_para_oscuro}
+        return render(request, 'mis_cosas_app/info.html', context)
+    else:
+        return render(request, 'mis_cosas_app/info.html')
+
 
 def alimentadores(request):
     lista_alimentadores = Alimentador.objects.all()
-    context = {'lista_alimentadores': lista_alimentadores}
+    # Puntuación de los alimentadores
+    for alimentador in lista_alimentadores:
+        alimentador.votos = 0
+        for item in alimentador.item_set.all():
+            item.votos = 0
+            for voto in item.voto_set.all():
+                if voto.voto_positivo:
+                    item.votos = item.votos + 1
+                elif voto.voto_negativo:
+                    item.votos = item.votos - 1
+            alimentador.votos = alimentador.votos + item.votos
+            alimentador.save()
+
+    if request.user.is_authenticated:
+        usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
+        context = {'lista_alimentadores': lista_alimentadores, 'modo': usuario_para_oscuro}
+    else:
+        context = {'lista_alimentadores': lista_alimentadores}
     return render(request, 'mis_cosas_app/alimentadores.html', context)
 
 def alimentador(request, id_alimentador):
     alimentador = Alimentador.objects.get(id_canal = id_alimentador)
-    context = {'alimentador': alimentador}
+    if request.user.is_authenticated:
+        usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
+        context = {'alimentador': alimentador, 'modo': usuario_para_oscuro}
+    else:
+        context = {'alimentador': alimentador}
     return render(request, 'mis_cosas_app/alimentador.html', context)
 
 def item(request, id_item):
@@ -151,7 +191,11 @@ def item(request, id_item):
         else:
             voto = None
         comentario = ComentarioForm()
-        context = {'item': item, 'voto': voto, 'comentario': comentario}
+        if request.user.is_authenticated:
+            usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
+            context = {'item': item, 'voto': voto, 'comentario': comentario, 'modo': usuario_para_oscuro}
+        else:
+            context = {'item': item, 'voto': voto, 'comentario': comentario}
         return render(request, 'mis_cosas_app/item.html', context)
     elif request.method == 'POST':
         accion = request.POST['accion']
@@ -176,14 +220,40 @@ def item(request, id_item):
                 comentario = Comentario(usuario = request.user, comentario = form.cleaned_data['comentario'],
                 item = item, fecha = timezone.now())
                 comentario.save()
-        # Actualizamos la puntuación total del ítem.
-
+        # Actualizamos la puntuación total del alimentador.
+        for alimentador in Alimentador.objects.all():
+            alimentador.votos = 0
+            for item in alimentador.item_set.all():
+                item.votos = 0
+                for voto in item.voto_set.all():
+                    if voto.voto_positivo:
+                        item.votos = item.votos + 1
+                    elif voto.voto_negativo:
+                        item.votos = item.votos - 1
+                alimentador.votos = alimentador.votos + item.votos
+                alimentador.save()
 
         return redirect(request.META['HTTP_REFERER'])
 
 def usuario(request, id_usuario):
-    usuario = User.objects.get(username = id_usuario)
-    items_votados = Voto.objects.filter(usuario = usuario)
-    items_comentados = Comentario.objects.filter(usuario = usuario)
-    context = {'usuario': usuario, 'items_votados': items_votados, 'items_comentados': items_comentados}
-    return render(request, 'mis_cosas_app/usuario.html', context)
+    if request.method == 'POST':
+        tema = request.POST['tema']
+        usuario, creado = Usuario.objects.get_or_create(usuario = request.user, defaults={'tema_oscuro': False})
+        if tema == "Modo oscuro":
+            usuario.tema_oscuro = True
+            usuario.save()
+        elif tema == "Modo claro":
+            usuario.tema_oscuro = False
+            usuario.save()
+        url = '/usuarios/' + request.user.username
+        return redirect(url)
+    elif request.method == 'GET':
+        usuario = User.objects.get(username = id_usuario)
+        items_votados = Voto.objects.filter(usuario = usuario)
+        items_comentados = Comentario.objects.filter(usuario = usuario)
+        if request.user.is_authenticated:
+            usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
+            context = {'usuario': usuario, 'items_votados': items_votados, 'items_comentados': items_comentados, 'modo': usuario_para_oscuro}
+        else:
+            context = {'usuario': usuario, 'items_votados': items_votados, 'items_comentados': items_comentados}
+        return render(request, 'mis_cosas_app/usuario.html', context)

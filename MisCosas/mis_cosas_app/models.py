@@ -33,6 +33,12 @@ class FotoDePerfil(models.Model):
     def __str__(self):
         return self.usuario.username
 
+class Usuario(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    tema_oscuro = models.BooleanField(default=False)
+    def __str__(self):
+        return self.usuario.username
+
 class Voto(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)

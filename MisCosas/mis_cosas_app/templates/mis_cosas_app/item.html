@@ -49,14 +49,14 @@
     </div>
     <br>
   </div>
-  <div class="container-fluid bg-warning">
+  <div class="container-fluid" id="detalles-alimentador">
     <br>
     <h2> Alimentador</h2>
     <div class="row">
       <div class="col">Canal: <a href="/alimentadores/{{ item.alimentador.id_canal }}" class="text-dark">{{ item.alimentador.nombre }}</a> </div>
       <div class="col">Enlace: <a href="{{ item.alimentador.enlace }}" class="text-dark">{{ item.alimentador.enlace }} </a></div>
       <div class="col"> Número de items disponible: {{ item.alimentador.item_set.count }} </div>
-      <div class="col"> Número de votos:  </div>
+      <div class="col"> Número de votos: {{ item.alimentador.votos }} </div>
     </div>
     <br>
   </div>

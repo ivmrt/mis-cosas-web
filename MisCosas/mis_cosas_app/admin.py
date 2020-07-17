@@ -7,5 +7,6 @@ admin.site.register(Item)
 admin.site.register(FotoDePerfil)
 admin.site.register(Voto)
 admin.site.register(Comentario)
+admin.site.register(Usuario)
 
 # Register your models here.

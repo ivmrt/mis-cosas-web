@@ -18,7 +18,7 @@
             <td><a href="/alimentadores/{{ alimentador.id_canal }}">{{ alimentador.nombre }}</a></td>
             <td><a href="{{ alimentador.enlace }}"> {{ alimentador.enlace }} </a></td>
             <td> {{ alimentador.item_set.count }} </td>
-            <td>Adios</td>
+            <td> {{ alimentador.votos }}</td>
           </tr>
           {% endfor %}
         </tbody>
