@@ -49,7 +49,7 @@
         <div class="container">
           <form method = "POST" action="/usuarios/{{ usuario.username }}">
             {% csrf_token %}
-            <input type="submit" name="tema" value="Modo claro" class="btn btn-outline-dark">
+            <input type="submit" name="tema" value="Modo claro" class="btn btn-outline-light">
           </form>
         </div>
       {% else %}

@@ -7,7 +7,8 @@
       <div class="card col-sm-4" style="width:400px">
         <div class="card-body">
           <h4 class="card-title">{{ usuario.username }}</h4>
-          <p class="card-text">Items votados: <br> Número de comentarios:  </p>
+          <p class="card-text">Items votados: {{ usuario.voto_set.count }}
+          <br> Número de comentarios: {{ usuario.comentario_set.count }} </p>
           <a href="/usuarios/{{ usuario.username }}" class="btn btn-dark">Ver perfil</a>
         </div>
         <img class="card-img-top" src="{}" alt="Card image" style="width:100%">

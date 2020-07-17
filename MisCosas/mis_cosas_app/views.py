@@ -71,19 +71,17 @@ def index(request):
         return redirect(request.META['HTTP_REFERER'])
     elif request.method == "GET":
         alimentadores = Alimentador.objects.filter(seleccionado=True)
+        items = Item.objects.all()
+        items_votados = items.order_by('-votos')
         # Ítems votados por el usuario
         if request.user.is_authenticated:
             usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
-            items_votados = Voto.objects.filter(usuario=request.user)
-            items_votados_ordenados = items_votados.order_by('-fecha')
-            context = {'alimentadores': alimentadores, 'items_votados': items_votados_ordenados[0:5], 'modo': usuario_para_oscuro}
+            items_votados_usuario = Voto.objects.filter(usuario=request.user)
+            items_votados_ordenados = items_votados_usuario.order_by('-fecha')
+            context = {'alimentadores': alimentadores, 'items_votados_usuario': items_votados_ordenados[0:5], 'modo': usuario_para_oscuro, 'items_votados': items_votados[0:10]}
         else:
-            items_votados= None
-            context = {'alimentadores': alimentadores, 'items_votados': items_votados}
-
-        #10 ítems con más puntuación
-
-
+            items_votados_usuario= None
+            context = {'alimentadores': alimentadores, 'items_votados_usuario': items_votados_usuario, 'items_votados': items_votados[0:10]}
         return render(request, 'mis_cosas_app/index.html', context)
 
 def log_out(request):
@@ -220,7 +218,20 @@ def item(request, id_item):
                 comentario = Comentario(usuario = request.user, comentario = form.cleaned_data['comentario'],
                 item = item, fecha = timezone.now())
                 comentario.save()
-        # Actualizamos la puntuación total del alimentador.
+
+        # Puntuación total del ítem
+        item.votos = 0
+        item.votos_positivos = 0
+        item.votos_negativos = 0
+        for voto in Voto.objects.filter(item = item):
+            if voto.voto_positivo:
+                item.votos_positivos = item.votos_positivos + 1
+            elif voto.voto_negativo:
+                item.votos_negativos = item.votos_negativos + 1
+            item.votos = item.votos_positivos - item.votos_negativos
+            item.save()
+
+        # Puntuación total de los alimentador.
         for alimentador in Alimentador.objects.all():
             alimentador.votos = 0
             for item in alimentador.item_set.all():

@@ -21,6 +21,8 @@ class Item(models.Model):
     descripcion = models.CharField(max_length=1024, null=True) # Para YouTube
     foto = models.URLField(null = True) # Para Flickr
     votos = models.IntegerField(default = 0)
+    votos_positivos = models.IntegerField(default=0)
+    votos_negativos = models.IntegerField(default=0)
 
     def __str__(self):
         return self.nombre

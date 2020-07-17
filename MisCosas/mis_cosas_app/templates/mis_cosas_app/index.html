@@ -16,6 +16,33 @@
 
     <div class="container">
       <br>
+      <h2>Top 10 ítems más votados</h2>
+      <table class="table table-hover table-secondary">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Enlace</th>
+            <th>Votos totales</th>
+            <th>Votos positivos</th>
+            <th>Votos negativos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items_votados %}
+          <tr>
+            <td><a href="/item/{{ item.id }}">{{ item.nombre }}</a></td>
+            <td><a href="{{ item.enlace }}"> {{ item.enlace }} </a></td>
+            <td> {{ item.votos }} </td>
+            <td>{{ item.votos_positivos }}</td>
+            <td>{{ item.votos_negativos }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="container">
+      <br>
       <h2>Alimentadores seleccionados</h2>
       <table class="table table-hover table-secondary">
         <thead>
@@ -66,7 +93,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for item in items_votados %}
+          {% for item in items_votados_usuario %}
           <tr>
             <td><a href="/item/{{ item.item.id }}"> {{ item.item.nombre }} </a></td>
             <td><a href="{{ item.item.enlace }}"> {{ item.item.enlace }} </a></td>
