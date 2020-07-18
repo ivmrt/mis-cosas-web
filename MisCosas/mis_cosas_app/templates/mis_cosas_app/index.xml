@@ -1,0 +1,29 @@
+<xml>
+  {% for item in items_votados%}
+    <diez_items>
+      <titulo>{{ item.nombre }}</titulo>
+      <enlace>{{ item.enlace }}</enlace>
+      <total_votos>{{ item.votos }}</total_votos>
+      <votos_positivos>{{ item.votos_positivos }}</votos_positivos>
+      <votos_negativos>{{ item.votos_negativos }}</votos_negativos>
+    </diez_items>
+  {% endfor %}
+
+  {% for alimentador in alimentadores %}
+    <alimentadores_seleccionados>
+      <alimentador>{{ alimentador.nombre }}</alimentador>
+      <enlace>{{ alimentador.enlace }}</enlace>
+      <items>{{ alimentador.item_set.count }}</items>
+      <puntuacion>{{ alimentador.votos }}</puntuacion>
+    </alimentadores_seleccionados>
+  {% endfor %}
+
+  {% for item in items_votados_usuario %}
+    <ultimos_items_votados>
+      <titulo>{{ item.item.nombre }}</titulo>
+      <enlace>{{ item.item.enlace }}</enlace>
+      <voto_positivo>{{ item.voto_positivo }}</voto_positivo>
+      <voto_negativo>{{ item.voto_negativo }}</voto_negativo>
+    </ultimos_items_votados>
+  {% endfor %}
+</xml>

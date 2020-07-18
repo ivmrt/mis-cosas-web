@@ -18,7 +18,7 @@
   </head>
 
   <body>
-    <div class="navbar bg-warning" id="cabecera" >
+    <div class="navbar bg-warning" id="cabecera">
       <img src="{% static "mis_cosas_app/miscosas.png" %}" alt="My image">
       <div id="LogIn">
         {% if user.is_authenticated %}
@@ -34,10 +34,18 @@
     </div>
 
     <div id="navbar" class="navbar bg-dark justify-content-center text-white">
-		    <a class="nav-link" href="/">Inicio</a>
-        <a class="nav-link" href="/usuarios">Usuarios</a>
-        <a class="nav-link" href="/alimentadores">Alimentadores</a>
-        <a class="nav-link" href="/info">Información</a>
+        {% if request.path != "/" %}
+		      <a class="nav-link" href="/"> Inicio</a>
+        {% endif %}
+        {% if request.path != "/usuarios" %}
+          <a class="nav-link" href="/usuarios">Usuarios</a>
+        {% endif %}
+        {% if request.path != "/alimentadores" %}
+          <a class="nav-link" href="/alimentadores">Alimentadores</a>
+        {% endif %}
+        {% if request.path != "/info" %}
+          <a class="nav-link" href="/info">Información</a>
+        {% endif %}
     </div>
 
     {% block contenido %}

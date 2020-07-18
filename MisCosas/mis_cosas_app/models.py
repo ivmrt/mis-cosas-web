@@ -28,16 +28,10 @@ class Item(models.Model):
         return self.nombre
 
 
-class FotoDePerfil(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    foto = models.ImageField(upload_to = "media", default="PERFIL-HUEVO.jpg")
-
-    def __str__(self):
-        return self.usuario.username
-
 class Usuario(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     tema_oscuro = models.BooleanField(default=False)
+    foto = models.ImageField(upload_to = 'static/mis_cosas_app/perfil', default="static/mis_cosas_app/perfil/PERFIL-HUEVO.jpg")
     def __str__(self):
         return self.usuario.username
 

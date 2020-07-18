@@ -6,9 +6,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .ytchannel import YTChannel
 from .flickrparser import FlickrParser
-from .models import Alimentador, Item, FotoDePerfil, Voto, Comentario, Usuario
+from .models import Alimentador, Item, Voto, Comentario, Usuario
 from .forms import ComentarioForm
 from django.utils import timezone
+import json
 
 import urllib
 
@@ -73,6 +74,8 @@ def index(request):
         alimentadores = Alimentador.objects.filter(seleccionado=True)
         items = Item.objects.all()
         items_votados = items.order_by('-votos')
+        formato = request.GET.get('formato')
+
         # Ítems votados por el usuario
         if request.user.is_authenticated:
             usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
@@ -82,6 +85,32 @@ def index(request):
         else:
             items_votados_usuario= None
             context = {'alimentadores': alimentadores, 'items_votados_usuario': items_votados_usuario, 'items_votados': items_votados[0:10]}
+        if formato == "XML":
+            return render(request, 'mis_cosas_app/index.xml', context, content_type="application/xhtml+xml")
+        elif formato == "JSON":
+            alimentadores_json = []
+            items_json = []
+            items_votados_usuario_json = []
+            respuesta_json = []
+            for item in items_votados:
+                items_json.append({"titulo": item.nombre, "enlace": item.enlace,
+                "votos_totales": item.votos, "votos_positivos": item.votos_positivos,
+                "votos_negativos": item.votos_negativos})
+            for alimentador in alimentadores:
+                alimentadores_json.append({"alimentador": alimentador.nombre,
+                "enlace": alimentador.enlace, "puntuación": alimentador.votos})
+            if request.user.is_authenticated:
+                for item in items_votados_usuario:
+                    items_votados_usuario_json.append({"titulo": item.item.nombre,
+                    "enlace": item.item.enlace, "voto positivo": item.voto_positivo,
+                    "voto negativo": item.voto_negativo})
+                respuesta_json.append({"items": items_json[0:10], "alimentadores": alimentadores_json,
+                "5 ultimos items votados por el usuario": items_votados_usuario_json})
+            else:
+                respuesta_json.append({"items": items_json[0:10], "alimentadores": alimentadores_json})
+            respuesta_json = json.dumps(respuesta_json)
+            return HttpResponse(respuesta_json, content_type="application/json")
+
         return render(request, 'mis_cosas_app/index.html', context)
 
 def log_out(request):
@@ -260,11 +289,12 @@ def usuario(request, id_usuario):
         return redirect(url)
     elif request.method == 'GET':
         usuario = User.objects.get(username = id_usuario)
+        foto = Usuario.objects.get(usuario = usuario).foto
         items_votados = Voto.objects.filter(usuario = usuario)
         items_comentados = Comentario.objects.filter(usuario = usuario)
         if request.user.is_authenticated:
             usuario_para_oscuro, creado = Usuario.objects.get_or_create(usuario = request.user)
-            context = {'usuario': usuario, 'items_votados': items_votados, 'items_comentados': items_comentados, 'modo': usuario_para_oscuro}
+            context = {'foto': foto, 'usuario': usuario, 'items_votados': items_votados, 'items_comentados': items_comentados, 'modo': usuario_para_oscuro}
         else:
-            context = {'usuario': usuario, 'items_votados': items_votados, 'items_comentados': items_comentados}
+            context = {'foto': foto, 'usuario': usuario, 'items_votados': items_votados, 'items_comentados': items_comentados}
         return render(request, 'mis_cosas_app/usuario.html', context)

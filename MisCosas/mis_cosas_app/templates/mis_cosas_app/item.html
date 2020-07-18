@@ -64,7 +64,11 @@
     <br>
     <h2> Comentarios </h2>
     {% if not item.comentario_set.all %}
-      <p> Aún no hay comentarios. Para escribir un comentario <a href="/login"> inicie sesión.</a></p>
+      {% if not user.is_authenticated %}
+        <p> Aún no hay comentarios. Para escribir un comentario <a href="/login"> inicie sesión.</a></p>
+      {% else %}
+        <p> Aún no hay comentarios. </p>
+      {% endif %}
     {% else %}
       {% for comentario in item.comentario_set.all %}
         <h4>{{ comentario.usuario.username }}</h4>
